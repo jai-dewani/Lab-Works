@@ -1,0 +1,29 @@
+{% include 'partials/header.html' %}
+<header>
+	<br>
+	<h2 class="text-center">Sign Up</h2>
+	<hr>
+</header>
+<div class="container">
+	<div class="text-right">
+		already have an Id? <a href="/loginuser">Login</a> here
+	</div>
+	<div class="text-center">
+		{{message}}
+	</div>
+	<form accept="signupuser" method="POST">
+		{% csrf_token %}
+		<label for='questionName'>Question Name</label>
+		<input type="text" name="questionName" class='form-control'>
+		<br>
+		<label for='questionCode'>Question Code</label>
+		<input type="texr" name="questionCode" class='form-control'>
+		<br>
+		<label for="questionDesc">Question Description</label>
+		<input type="text" name="questionDesc" class="form-control">
+		<br>
+		<input type="submit" class="btn btn-primary" value="Sign Up"/>
+	</form>
+</div>
+
+{% include 'partials/footer.html' %}
