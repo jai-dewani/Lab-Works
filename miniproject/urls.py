@@ -9,7 +9,9 @@ urlpatterns = [
 	path('loginuser',views.login_view,name='loginuser'),
 	path('logoutuser',views.logout_view,name='logoutuser'),
 	path('new_question',views.newQuestion,name='newQuestion'),
-	path('question/<int:question_id>',views.viewQuestion,name='viewQuestion')
+	path('question/<int:question_id>',views.viewQuestion,name='viewQuestion'),
+	path('question/<int:question_id>/add_testcase',views.addTestCase,name='addTestCase'),
+
 	# path('add',views.add,name="add"),
 	# path('details/<int:todo_id>',views.details,name="details"),
 	# path('edit/<int:todo_id>',views.edit,name="edit"),

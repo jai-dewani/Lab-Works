@@ -1,0 +1,20 @@
+{% include 'partials/header.html' %}
+<b>Question Name: </b>
+{{question.QName}}<br>
+<b>Question Code: </b>
+{{question.QCode}}<br>
+<b>Question Description: </b>
+{{question.QDesc}}<br>
+<i>Created by: </i>
+{{question.createdBy}}<br>
+
+Test Cases:
+{% for case in cases %}
+    <b>Input: </b>
+    {{case.input}} <br>
+    <b>Output: </b>
+    {{case.output}} <br>
+{% endfor %}
+
+
+{% include 'partials/footer.html' %}

@@ -3,7 +3,7 @@ from django.contrib.auth import get_user_model, logout
 from django.contrib.auth import authenticate, login
 from django.contrib.auth.models import User
 
-from .models import Answers, Question, AccountUser
+from .models import Answers, Question, AccountUser, TestCase
 # Create your views here.
 
 def index(request):
@@ -13,7 +13,7 @@ def index(request):
         current_user = request.user
         print(current_user)
         questions = Question.objects.filter()
-
+        print(questions[0].QName)
         context = {
             'questions':questions,
             'user':True
@@ -46,11 +46,28 @@ def viewQuestion(request,question_id):
         pass
     else:
         question = Question.objects.filter(id=question_id)[0]
-        print(question)
+        # print(question)
+        testCase = TestCase.objects.filter(Question=question)
         context = {
-            'question':question
+            'question':question,
+            'cases':testCase
         }
-        return render(request,'viewQuestion',context)
+        return render(request,'viewQuestion.html',context)
+
+def addTestCase(request,question_id):
+    if request.method=='POST':
+        input = request.POST['input']
+        output = request.POST['output']
+        question = Question.objects.filter(id=question_id)[0]
+        testcase = TestCase(
+            Question = question,
+            input = input,
+            output = output
+        )
+        testcase.save()
+        return redirect('question/'+str(question_id))
+    else:
+        return render(request,'addTestCase.html')
 
 def signup_view(request):
     if request.method=='POST':

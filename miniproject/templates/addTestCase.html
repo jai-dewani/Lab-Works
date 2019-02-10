@@ -1,0 +1,24 @@
+{% include 'partials/header.html' %}
+<header>
+	<br>
+	<h2 class="text-center">Add TestCase</h2>
+	<hr>
+</header>
+<div class="container">
+	<!-- <div class="text-center">
+		{{message}}
+	</div> -->
+	<form accept="signupuser" method="POST">
+		{% csrf_token %}
+        <label for='input'>Input</label>
+        <textarea class="form-control" name="input" ></textarea>
+		<br>
+		<label for='email'>Output</label>
+        <textarea class="form-control" name="output"></textarea>	
+        <br>
+		<input type="submit" class="btn btn-primary" value="Add"/>
+	</form>
+</div>
+
+
+{% include 'partials/footer.html' %}
