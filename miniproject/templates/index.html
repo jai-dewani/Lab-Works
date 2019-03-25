@@ -2,12 +2,13 @@
 <a href="new_question">
     <button>Add new Question</button>
 </a><br>
-{% for question in questions %}
-    {{question.QName}}<br>
-    {{question.QCode}}<br>
-    {{question.QDesc}}<br>
-    {{question.createdBy}}
-    <br><br><br>
-{% endfor %}
-
+{% if questions %}
+	{% for question in questions %}
+	    {{question.QName}}<br>
+	    {{question.QCode}}<br>
+	    {{question.QDesc}}<br>
+	    {{question.createdBy}}
+	    <br><br><br>
+	{% endfor %}
+{% endif %}
 {% include 'partials/footer.html' %}

@@ -6,11 +6,11 @@ from django.contrib.auth.models import User
 import os
 from django.conf import settings
 
-from .models import Answers, Question, AccountUser, TestCase, Document
+from .models import Answers, Question, AccountUser, Document
 from .forms import DocumentForm
 # Create your views here.
 
-file_ = open(os.path.join(settings.BASE_DIR,'filename'))
+# file_ = open(os.path.join(settings.BASE_DIR,'filename'))
 
 
 
@@ -21,7 +21,7 @@ def index(request):
         current_user = request.user
         print(current_user)
         questions = Question.objects.filter()
-        print(questions[0].QName)
+        # print(questions[0].QName)
         context = {
             'questions':questions,
             'user':True
@@ -55,7 +55,7 @@ def viewQuestion(request,question_id):
     else:
         question = Question.objects.filter(id=question_id)[0]
         # print(question)
-        testCase = TestCase.objects.filter(Question=question)
+        testCase = Document.objects.filter(Question=question)
         context = {
             'question':question,
             'cases':testCase
