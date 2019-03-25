@@ -1,0 +1,28 @@
+{% include 'partials/header.html' %}
+
+{% if documents %}
+	<ul>
+		{% for document in documents %}
+			<li>
+				<a href="{{ document.document.url }}">
+					{{ document.description }}
+				</a>
+			</li>
+		{% endfor %}
+	</ul>
+{% else %}
+	<p>No documents.</p>
+{% endif %}
+
+
+{% block content %}
+  <form method="post" enctype="multipart/form-data">
+    {% csrf_token %}
+    {{ form.as_p }}
+    <button type="submit">Upload</button>
+  </form>
+
+  <p><a href="/">Return to home</a></p>
+{% endblock %}
+
+{% include 'partials/footer.html' %}

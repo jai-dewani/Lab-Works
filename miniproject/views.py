@@ -3,8 +3,16 @@ from django.contrib.auth import get_user_model, logout
 from django.contrib.auth import authenticate, login
 from django.contrib.auth.models import User
 
-from .models import Answers, Question, AccountUser, TestCase
+import os
+from django.conf import settings
+
+from .models import Answers, Question, AccountUser, TestCase, Document
+from .forms import DocumentForm
 # Create your views here.
+
+file_ = open(os.path.join(settings.BASE_DIR,'filename'))
+
+
 
 def index(request):
     if not request.user.is_authenticated:
@@ -56,6 +64,9 @@ def viewQuestion(request,question_id):
 
 def addTestCase(request,question_id):
     if request.method=='POST':
+        form = DocumentForm(request.POST, request.FILES)
+        if form.is_valid():
+            form.save()
         input = request.POST['input']
         output = request.POST['output']
         question = Question.objects.filter(id=question_id)[0]
@@ -68,6 +79,20 @@ def addTestCase(request,question_id):
         return redirect('question/'+str(question_id))
     else:
         return render(request,'addTestCase.html')
+
+def upload(request):
+    if request.method=='POST':
+        form = DocumentForm(request.POST, request.FILES)
+        if form.is_valid():
+            form.save()
+            # return redirect('/')
+    else:
+        form = DocumentForm()
+    documents = Document.objects.all()
+    return render(request, 'upload.html',{
+            'form':form,
+            'documents':documents
+        })
 
 def signup_view(request):
     if request.method=='POST':

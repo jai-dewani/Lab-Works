@@ -1,4 +1,5 @@
 from django.urls import path
+from django.conf.urls.static import static
 
 from . import views
 
@@ -11,7 +12,7 @@ urlpatterns = [
 	path('new_question',views.newQuestion,name='newQuestion'),
 	path('question/<int:question_id>',views.viewQuestion,name='viewQuestion'),
 	path('question/<int:question_id>/add_testcase',views.addTestCase,name='addTestCase'),
-
+	path('upload',views.upload,name='upload'),
 	# path('add',views.add,name="add"),
 	# path('details/<int:todo_id>',views.details,name="details"),
 	# path('edit/<int:todo_id>',views.edit,name="edit"),

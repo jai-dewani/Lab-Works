@@ -19,10 +19,10 @@ class Question(models.Model):
     def __str__(self):
         return self.QName
 
-class TestCase(models.Model):
-    Question = models.ForeignKey(Question,on_delete=models.CASCADE)
-    input = models.TextField()
-    output = models.TextField()
+# class TestCase(models.Model):
+#     Question = models.ForeignKey(Question,on_delete=models.CASCADE)
+#     input = models.TextField()
+#     output = models.TextField()
 
 
 class Answers(models.Model):
@@ -33,3 +33,12 @@ class Answers(models.Model):
 
     def __str__(self):
         return self.question
+
+class Document(models.Model):
+    Question = models.ForeignKey(Question,on_delete=models.CASCADE)
+    description = models.CharField(max_length=255, blank=True)
+    document = models.FileField(upload_to='document/')
+    upload_at = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return self.description

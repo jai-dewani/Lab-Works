@@ -8,16 +8,31 @@
 	<!-- <div class="text-center">
 		{{message}}
 	</div> -->
-	<form accept="signupuser" method="POST">
-		{% csrf_token %}
-        <label for='input'>Input</label>
-        <textarea class="form-control" name="input" ></textarea>
-		<br>
-		<label for='email'>Output</label>
-        <textarea class="form-control" name="output"></textarea>	
-        <br>
-		<input type="submit" class="btn btn-primary" value="Add"/>
-	</form>
+	{% if documents %}
+		<ul>
+			{% for document in documents %}
+				<li>
+					<a href="{{ document.document.url }}">
+						{{ document.description }}
+					</a>
+				</li>
+			{% endfor %}
+		</ul>
+	{% else %}
+		<p>No documents.</p>
+	{% endif %}
+
+
+	{% block content %}
+	  <form method="post" enctype="multipart/form-data">
+	    {% csrf_token %}
+	    {{ form.as_p }}
+	    <button type="submit">Upload</button>
+	  </form>
+
+	  <p><a href="/">Return to home</a></p>
+	{% endblock %}
+
 </div>
 
 
