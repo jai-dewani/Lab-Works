@@ -1,21 +1,59 @@
 {% include 'partials/header.html' %}
-<b>Question Name: </b>
-{{question.QName}}<br>
-<b>Question Code: </b>
-{{question.QCode}}<br>
-<b>Question Description: </b>
-{{question.QDesc}}<br>
-<i>Created by: </i>
-{{question.createdBy}}<br>
 
-Test Cases:
-{% for case in cases %}
-    <b>Input: </b>
-    {{case.input}} <br>
-    <b>Output: </b>
-    {{case.output}} <br>
-{% endfor %}
+<div class="container">
+	<div class="row">
+		<div class="col-sm">
+			<b>Question Name: </b> {{question.QName}}<br>
+			<b>Question Code: </b> {{question.QCode}}<br>
+			<i>Created by: </i> {{question.createdBy}}<br>
+		</div>
+	</div>
+	<div class="row">
+		<div class="col-sm">
+			<b>Question Description: </b>
+			{{question.QDesc}}<br>
+		</div>
+	</div>
+	<div class="row">
+		Test Cases:
+	</div>
+	{% for case in cases %}
+	<div class="row">
+		<div class="col-sm">
+		    <b>Input: </b>
+		    {{case.input}} <br>
+		</div>
+		<div class="col-sm">
+		    <b>Output: </b>
+		    {{case.output}} <br>			
+		</div>
+	{% endfor %}
+	</div>
+</div>
+
 <br>
+
+
+<div class="container">
+	{% if subjects %}
+		{% for subject in subjects %}
+			<div class="row">
+				<div class="col-sm">
+					<b>Subject Name: </b> {{subject.Sname}}<br>
+					<i>By: </i> {{subject.Sprof}}<br>
+					<br>
+				</div>
+				<div class="col-sm">
+					Credits:  {{subject.Scredit}}<br>
+				</div>
+			</div>
+		{% endfor %}
+	{% endif %}
+</div>
+
+
+
+
 <a href="{{question.id}}/add_testcase">Add TestCases</a>
 
 {% include 'partials/footer.html' %}

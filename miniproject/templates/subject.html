@@ -4,21 +4,21 @@
 </a><br>
 
 <div class="container">
-	{% if subjects %}
-		{% for subject in subjects %}
+	{% if questions %}
+		{% for question in questions %}
 			<div class="row">
 				<div class="col-sm">
-					<b>Subject Name: </b> {{subject.Sname}}<br>
-					<i>By: </i> {{subject.Sprof}}<br>
+					<b>Question Name: </b> {{question.QName}}<br>
+					<i>Question Code: </i> {{questionn.QCode}}<br>
 					<br>
 				</div>
 				<div class="col-sm">
-					Credits:  {{subject.Scredit}}<br>
-					{{subject.id}}
+					Credits:  {{question.Scredit}}<br>
+					{{question.id}}
 				</div>
 
 				<div class="col-sm">
-					<a href="{% url 'miniproject:subject' subject.id %}">Check</a>
+					<a href="{% url 'miniproject:question' subject_id question.id %}">Check</a>
 				</div>
 			</div>
 		{% endfor %}
