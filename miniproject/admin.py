@@ -2,12 +2,13 @@ from django.contrib import admin
 
 # Register your models here.
 
-from .models import Answers,Question,AccountUser, Document, Subject, Professor
-from .forms import DocumentForm
+from .models import Answers,Question,AccountUser, Document, Subject, Professor, Testcase
+# from .forms import DocumentForm
 
 admin.site.register(AccountUser)
 admin.site.register(Professor)
 admin.site.register(Subject)
 admin.site.register(Question)
+admin.site.register(Testcase)
 admin.site.register(Answers)
 admin.site.register(Document)

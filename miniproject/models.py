@@ -35,15 +35,18 @@ class Question(models.Model):
     createdBy = models.ForeignKey(Professor,on_delete=models.CASCADE)
     Qsubject = models.ForeignKey(Subject,default=1,on_delete=models.CASCADE)
     createdAt = models.DateTimeField(default=datetime.now, blank=True)
-
+    testcases = models.IntegerField(default=0)
     def __str__(self):
         return self.QName
 
-# class TestCase(models.Model):
-#     Question = models.ForeignKey(Question,on_delete=models.CASCADE)
-#     input = models.TextField()
-#     output = models.TextField()
 
+
+class Testcase(models.Model):
+    Question = models.ForeignKey(Question,on_delete=models.CASCADE)
+    input = models.FileField(upload_to='')
+    output = models.FileField()
+    def __str__(self):
+        return self.Question.QName
 
 class Answers(models.Model):
     question = models.ForeignKey(Question, on_delete=models.CASCADE)
@@ -57,8 +60,8 @@ class Answers(models.Model):
 class Document(models.Model):
     # document = models.FileField(upload_to='document/')
     Question = models.ForeignKey(Question,on_delete=models.CASCADE)
-    input = models.CharField(max_length=255, blank=True)
-    output = models.CharField(max_length=255, blank=True)
+    input = models.FileField()
+    output = models.FileField()
     upload_at = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):

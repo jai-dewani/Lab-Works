@@ -14,46 +14,41 @@
 			{{question.QDesc}}<br>
 		</div>
 	</div>
+	<br><br>
 	<div class="row">
-		Test Cases:
+		<div class="col-sm">
+			Test Cases:
+		</div>
+		<div class="col-sm">
+			
+		</div>
+		<div class="col-sm">
+			<a href="{% url 'miniproject:testcase' subject_id question.id %}">Add TestCases</a>
+		</div>
 	</div>
-	{% for case in cases %}
+	{% for case in testcase %}
 	<div class="row">
 		<div class="col-sm">
 		    <b>Input: </b>
-		    {{case.input}} <br>
+			<a href="{{case.input.url}}">
+			{{case.input}} 
+			</a>
+			
 		</div>
 		<div class="col-sm">
-		    <b>Output: </b>
-		    {{case.output}} <br>			
+			<b>Output:</b>
+		    <a href="{{case.output.url}}">
+			    {{case.output}}
+			</a>			
 		</div>
-	{% endfor %}
 	</div>
+	<br>
+	{% endfor %}
 </div>
 
 <br>
 
 
-<div class="container">
-	{% if subjects %}
-		{% for subject in subjects %}
-			<div class="row">
-				<div class="col-sm">
-					<b>Subject Name: </b> {{subject.Sname}}<br>
-					<i>By: </i> {{subject.Sprof}}<br>
-					<br>
-				</div>
-				<div class="col-sm">
-					Credits:  {{subject.Scredit}}<br>
-				</div>
-			</div>
-		{% endfor %}
-	{% endif %}
-</div>
 
-
-
-
-<a href="{{question.id}}/add_testcase">Add TestCases</a>
 
 {% include 'partials/footer.html' %}

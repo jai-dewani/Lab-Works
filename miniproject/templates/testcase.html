@@ -22,11 +22,20 @@
 	{% endif %}
 
 	{% block content %}
-	  <form method="post" enctype="multipart/form-data">
-	    {% csrf_token %}
-	    {{ form.as_p }}
-	    <button type="submit">Upload</button>
-	  </form>
+		<form method="post" action="" enctype="multipart/form-data">
+		{% csrf_token %}
+			<div>
+				Input: 
+				<input type="file" name="input" multiple/>
+			</div>
+			<div>
+				Output:
+				<input type="file" name="output" multiple/>
+			</div>
+			<div>
+				<button type="submit">Upload</button>
+			</div>
+		</form>
 
 	  <p><a href="/">Return to home</a></p>
 	{% endblock %}
