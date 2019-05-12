@@ -5,57 +5,31 @@ from django.contrib.auth import authenticate, login
 from django.contrib.auth.models import User
 from django.http import HttpResponseForbidden, JsonResponse
 
+
 import os
-import requests
+import requests, json
 from django.conf import settings
 
-from .models import Answers, Question, AccountUser, Document, Subject, Testcase
+from .models import Answers, Question, AccountUser, Subject, Testcase
 from .forms import UploadFileForm
 
 
-# Create your views here.
+RUN_URL = 'https://api.jdoodle.com/v1/execute'
 
-# file_ = open(os.path.join(settings.BASE_DIR,'filename'))
+CLIENT_SECRET = '5db3f1c12c59caa1002d1cb5757e72c96d969a1a'
 
-
-# def run(request):
-# 	return render(request, 'run.html', {})
-
-
-# def compile(request):
-# 	# if request.method=='POST':
-# 	if request.is_ajax():
-# 		source = request.POST['source']
-# 		lang = request.POST['lang']
-# 		data = {
-# 			'client_secret': 'efee14e3d19da585f2660381d79d81891f3417a9' ,
-# 			'async': 0,
-# 			'source': source,
-# 			'lang': lang,
-# 			'time_limit': 5,
-# 			'memory_limit': 262144,
-# 		}
-# 		if 'input' in request.POST:
-# 			data['input'] = request.POST['input']
-# 		r = requests.post(RUN_URL, data=data)
-# 		return JsonResponse(r.json(), safe=False)
-
-# 	else:
-# 		return HttpResponseForbidden()
 
 
 def index(request):
 	if not request.user.is_authenticated:
 		return redirect('/loginuser')
 	else:
-		current_user = request.user
-		print(current_user)
 		subjects = Subject.objects.filter()
 		# print(questions[0].QName)
 		context = {
 			'subjects':subjects,
 			'user':True,
-			'username': current_user.username
+			'username': request.user.username
 		}
 		print(context)
 
@@ -70,21 +44,52 @@ def subject(request,subject_id):
 		questions = Question.objects.filter(Qsubject=subject)
 		context = {
 			'questions' : questions,
-			'subject_id': subject_id
+			'subject_id': subject_id,
+			'username': request.user.username
 		}
 		return render(request,'subject.html',context)
 def question(request,subject_id,question_id):
 	if request.method == 'POST':
-		return
+		form = UploadFileForm(request.POST, request.FILES)
+		source_code = request.FILES['code'].read().decode('unicode_escape')
+		# print(source_code)
+		question = Question.objects.get(id=question_id)
+		testcases = Testcase.objects.filter(Question=question)
+		flag = True,
+		error = ''
+		for testcase in testcases:
+			input = testcase.input.read().decode('unicode_escape')
+			expectedOutput = testcase.output.read().decode('unicode_escape')
+			data = {
+			    "script": source_code,
+			    "stdin":input,
+			    "language": "python3",
+			    "versionIndex": "0",
+			    "clientId": "d0b2ab4f943ca044aa8e9ee39290afd5",
+			    "clientSecret":"8ddec190c616ac0aafdef83aa83e4a7a493c1415c44b81e29d49405ad5031dd"
+			}
+			r = requests.post(RUN_URL, json=data).json()
+			output = output["output"]
+			if output!=expectedOutput:
+				flag = False
+				error = output
+				break
+		context = {
+			'answer':flag,
+			'error':error
+		}
+			# print(output["output"])
+
+		return redirect('/')
 	else:
 		question = Question.objects.get(id=question_id)
 		testcase = Testcase.objects.filter(Question=question)
-		print(testcase[0])
 
 		context = {
 			'subject_id': subject_id,
 			'question' : question,
-			'testcase':testcase
+			'testcase':testcase,
+			'username': request.user.username
 		}
 		return render(request,'viewQuestion.html',context)
 
@@ -107,7 +112,11 @@ def newQuestion(request,subject_id):
 		question.save()
 		return redirect('question/'+str(question.id))
 	else:
-		return render(request,'newQuestion.html')
+		context = {
+			'username': request.user.username
+		}
+		
+		return render(request,'newQuestion.html',context)
 
 def viewfile(request,filename):
 	with open('media/'+str(filename), 'r') as destination:
@@ -115,20 +124,6 @@ def viewfile(request,filename):
 		for chunk in destination.read():
 			stream += chunk
 		return HttpResponse(stream,content_type='text/plain')
-
-# def viewQuestion(request,question_id):
-# 	if request.method=='POST':
-# 		pass
-# 	else:
-# 		question = Question.objects.filter(id=question_id)[0]
-# 		# print(question)
-# 		testCase = Document.objects.filter(Question=question)
-# 		context = {
-# 			'subject_id':subject_id
-# 			'question':question,
-# 			'cases':testCase
-# 		}
-# 		return render(request,'viewQuestion.html',context)
 
 def testCase(request,subject_id,question_id):
 	if request.method=='POST':
@@ -145,7 +140,8 @@ def testCase(request,subject_id,question_id):
 	else:
 		context = {
 			'subject_id':subject_id,
-			'question_id':question_id
+			'question_id':question_id,
+			'username': request.user.username
 		}
 		return render(request,'testcase.html',context)
 
@@ -166,7 +162,8 @@ def upload(request):
 	documents = Document.objects.all()
 	return render(request, 'upload.html',{
 			'form':form,
-			'documents':documents
+			'documents':documents,
+			'username': request.user.username
 		})
 
 def signup_view(request):
@@ -183,12 +180,10 @@ def signup_view(request):
 			email=email,
 			password=password
 		)
-		print(user)
-		accountType = str(accountType)
 		accountUser = AccountUser(
 			user = user,
 			phoneNumber = phoneNumber,
-			accountType = accountType
+			accountType = str(accountType)
 		)
 		accountUser.save()
 		user = authenticate(
@@ -198,7 +193,6 @@ def signup_view(request):
 		)
 		if user is not None:
 			login(request,user)
-			print(user)
 			return redirect('/')
 		else:
 			print("PROBLEM")

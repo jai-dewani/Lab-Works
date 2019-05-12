@@ -1,24 +1,28 @@
 {% include 'partials/header.html' %}
-<a href="new_question">
-	<button>Add new Question</button>
-</a><br>
+
+<p style="margin-top: 10px;" class="container text-right">
+	<a href="new_question" class="btn btn-primary">
+		Add new Question
+	</a>	
+</p>
 
 <div class="container">
 	{% if questions %}
 		{% for question in questions %}
 			<div class="row">
-				<div class="col-sm">
-					<b>Question Name: </b> {{question.QName}}<br>
-					<i>Question Code: </i> {{questionn.QCode}}<br>
-					<br>
-				</div>
-				<div class="col-sm">
-					Credits:  {{question.Scredit}}<br>
-					{{question.id}}
-				</div>
-
-				<div class="col-sm">
-					<a href="{% url 'miniproject:question' subject_id question.id %}">Check</a>
+				<div class="col-sm-12">
+					<div class="card">
+						<div class="card-body">
+							<h5 class="card-title">{{question.QName}}</h5>
+							<p style="float: left;" class="card-text">
+								<i>Question code: {{question.QCode}}</i><br>
+							</p>
+							<p style="float: right;" class="text-right">
+								<a href="{% url 'miniproject:question' subject_id question.id %}">Check</a>
+							</p>
+						</div>
+					</div>
+					
 				</div>
 			</div>
 		{% endfor %}

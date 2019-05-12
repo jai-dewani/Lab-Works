@@ -57,12 +57,3 @@ class Answers(models.Model):
     def __str__(self):
         return self.question
 
-class Document(models.Model):
-    # document = models.FileField(upload_to='document/')
-    Question = models.ForeignKey(Question,on_delete=models.CASCADE)
-    input = models.FileField()
-    output = models.FileField()
-    upload_at = models.DateTimeField(auto_now_add=True)
-
-    def __str__(self):
-        return self.description
