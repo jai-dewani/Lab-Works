@@ -26,9 +26,16 @@ def index(request):
 	else:
 		subjects = Subject.objects.filter()
 		# print(questions[0].QName)
+		try:
+			user = AccountUser.objects.get(user=request.user)
+			userType = 'S'
+		except:
+			userType = 'P'
+
 		context = {
 			'subjects':subjects,
 			'user':True,
+			'userType':userType,
 			'username': request.user.username
 		}
 		print(context)
@@ -42,12 +49,20 @@ def subject(request,subject_id):
 	else:
 		subject = Subject.objects.get(id=subject_id)
 		questions = Question.objects.filter(Qsubject=subject)
+		try:
+			user = AccountUser.objects.get(user=request.user)
+			userType = 'S'
+		except:
+			userType = 'P'
 		context = {
 			'questions' : questions,
 			'subject_id': subject_id,
+			'userType':userType,
 			'username': request.user.username
 		}
 		return render(request,'subject.html',context)
+
+
 def question(request,subject_id,question_id):
 	if request.method == 'POST':
 		form = UploadFileForm(request.POST, request.FILES)
@@ -58,8 +73,17 @@ def question(request,subject_id,question_id):
 		flag = True,
 		error = ''
 		for testcase in testcases:
-			input = testcase.input.read().decode('unicode_escape')
-			expectedOutput = testcase.output.read().decode('unicode_escape')
+			input = testcase.input.read()
+			# input = input.relpace('\r','')
+			input = input.decode('unicode_escape')
+			expectedOutput = testcase.output.read()
+			# expectedOutput = expectedOutput.relpace('\r','')
+			print(expectedOutput)
+			output = expectedOutput.decode('unicode_escape')
+			print("INPUT")
+			print(input)
+			print("OUTPUT")
+			print(expectedOutput)
 			data = {
 			    "script": source_code,
 			    "stdin":input,
@@ -68,11 +92,18 @@ def question(request,subject_id,question_id):
 			    "clientId": "d0b2ab4f943ca044aa8e9ee39290afd5",
 			    "clientSecret":"8ddec190c616ac0aafdef83aa83e4a7a493c1415c44b81e29d49405ad5031dd"
 			}
-			r = requests.post(RUN_URL, json=data).json()
+			output = requests.post(RUN_URL, json=data).json()
+			print(output)
 			output = output["output"]
-			if output!=expectedOutput:
+			print("EXPOUTPUT")
+			print(output)
+			print(type(output),type(expectedOutput))
+			if output==expectedOutput:
+				print("CORRECT")
+			else:
 				flag = False
 				error = output
+				print(flag,error)
 				break
 		context = {
 			'answer':flag,
@@ -80,13 +111,25 @@ def question(request,subject_id,question_id):
 		}
 			# print(output["output"])
 
-		return redirect('/')
+		return render(request,'answer.html',context)
 	else:
 		question = Question.objects.get(id=question_id)
 		testcase = Testcase.objects.filter(Question=question)
+		subject = Subject.objects.get(id=subject_id)
+		try:
+			user = AccountUser.objects.get(user=request.user)
+			try:
+				testcase = testcase[:1]
+			except:
+				testcase = []
+			userType = 'S'
+		except:
+			userType = 'P'
 
 		context = {
 			'subject_id': subject_id,
+			'subject_name':subject.Sname,
+			'userType':userType,
 			'question' : question,
 			'testcase':testcase,
 			'username': request.user.username

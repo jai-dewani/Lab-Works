@@ -1,56 +1,61 @@
 {% include 'partials/header.html' %}
-
+<p></p>
 <div class="container">
 	<div class="row">
 		<div class="col-sm">
-			<b>Question Name: </b> {{question.QName}}<br>
-			<b>Question Code: </b> {{question.QCode}}<br>
-			<i>Created by: </i> {{question.createdBy}}<br>
+			<div class="card">
+				<div class="card-header">
+					{{subject_name}}
+				</div>
+				<div class="card-body">
+					<h5 class="card-title">{{question.QName}}</h5>
+					<p class="card-text">{{question.QDesc}}</p>
+					<b>Question Code: </b> {{question.QCode}}<br>
+					<i>Created by: </i> {{question.createdBy}}<br>
+					<br>
+					Submit your code:
+					<form action="" method="POST" enctype="multipart/form-data">
+						{% csrf_token %}
+						<input type="file" name="code">
+						<input class="btn btn-primary" type="submit" value="submit">
+					</form>
+				</div>
+			</div>
 		</div>
 	</div>
-	<div class="row">
-		<div class="col-sm">
-			<b>Question Description: </b>
-			{{question.QDesc}}<br>
-		</div>
-	</div>
+	
 	<br><br>
-	<div class="row">
-		<div class="col-sm">
-			Test Cases:
+		<div class="row">
+			<div class="col-sm">
+				Test Cases:
+			</div>
+			<div class="col-sm"></div>
+			{% ifequal userType 'P' %}
+			<div class="col-sm">
+				<a href="{% url 'miniproject:testcase' subject_id question.id %}">Add TestCases</a>
+			</div>
+			{% endifequal %}
 		</div>
-		<div class="col-sm">
-			
+	{% if testcase %}
+		{% for case in testcase %}
+		<div class="row">
+			<div class="col-sm">
+			    <b>Input: </b>
+				<a href="{{case.input.url}}">
+				{{case.input}} 
+				</a>
+				
+			</div>
+			<div class="col-sm">
+				<b>Output:</b>
+			    <a href="{{case.output.url}}">
+				    {{case.output}}
+				</a>			
+			</div>
 		</div>
-		<div class="col-sm">
-			<a href="{% url 'miniproject:testcase' subject_id question.id %}">Add TestCases</a>
-		</div>
-	</div>
-	Submit your code:
-	<form action="" method="POST" enctype="multipart/form-data">
-		{% csrf_token %}
-		<input type="file" name="code">
-		<input type="submit" value="submit">
-	</form>
-
-	{% for case in testcase %}
-	<div class="row">
-		<div class="col-sm">
-		    <b>Input: </b>
-			<a href="{{case.input.url}}">
-			{{case.input}} 
-			</a>
-			
-		</div>
-		<div class="col-sm">
-			<b>Output:</b>
-		    <a href="{{case.output.url}}">
-			    {{case.output}}
-			</a>			
-		</div>
-	</div>
-	<br>
-	{% endfor %}
+		<br>
+		{% endfor %}
+	{% endif %}
 </div>
 
 <br>

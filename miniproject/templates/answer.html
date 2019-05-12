@@ -1,64 +1,21 @@
 {% include 'partials/header.html' %}
-
+<p></p>
 <div class="container">
 	<div class="row">
 		{% if answer %}
-			<div class="col-sm">
-				<b>Result: </b>
-				Corrent
+			<div class="col-sm text-center">
+				<h2>
+					Corrent
+				</h2>
 			</div>
 		{% else %}
-			<div class="col-sm">
-				Wrong
+			<div class="col-sm text-center">
+				<h2>
+					Wrong
+				</h2>
 			</div>
 		{% endif %}
 	</div>
-	<div class="row">
-		<div class="col-sm">
-			<b>Question Description: </b>
-			{{question.QDesc}}<br>
-		</div>
-	</div>
-	<br><br>
-	<div class="row">
-		<div class="col-sm">
-			Test Cases:
-		</div>
-		<div class="col-sm">
-			
-		</div>
-		<div class="col-sm">
-			<a href="{% url 'miniproject:testcase' subject_id question.id %}">Add TestCases</a>
-		</div>
-	</div>
-	Submit your code:
-	<form action="" method="POST" enctype="multipart/form-data">
-		{% csrf_token %}
-		<input type="file" name="code">
-		<input type="submit" value="submit">
-	</form>
-
-	{% for case in testcase %}
-	<div class="row">
-		<div class="col-sm">
-		    <b>Input: </b>
-			<a href="{{case.input.url}}">
-			{{case.input}} 
-			</a>
-			
-		</div>
-		<div class="col-sm">
-			<b>Output:</b>
-		    <a href="{{case.output.url}}">
-			    {{case.output}}
-			</a>			
-		</div>
-	</div>
-	<br>
-	{% endfor %}
 </div>
-
-<br>
-
 
 {% include 'partials/footer.html' %}

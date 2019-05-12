@@ -1,9 +1,15 @@
 {% include 'partials/header.html' %}
+
+{% ifequal userType 'P' %}
 <p style="margin-top: 10px;" class="container text-right">
 	<a href="new_question" class="btn btn-primary">
 		Add new Question
 	</a>	
 </p>
+{% else %}
+<p></p>
+{% endifequal %}
+
 
 <div class="container">
 	{% if subjects %}
