@@ -215,8 +215,7 @@ def signup_view(request):
 		password = request.POST['password']
 		email = request.POST['email']
 		phoneNumber = request.POST['phoneNumber']
-		accountType = request.POST['accountType']
-		print(accountType)
+		sem = request.POST['sem']
 		# try:
 		user = User.objects.create_user(
 			username = username,
@@ -226,7 +225,7 @@ def signup_view(request):
 		accountUser = AccountUser(
 			user = user,
 			phoneNumber = phoneNumber,
-			accountType = str(accountType)
+			semester = sem
 		)
 		accountUser.save()
 		user = authenticate(
