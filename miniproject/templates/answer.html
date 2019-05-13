@@ -5,7 +5,7 @@
 		{% if answer %}
 			<div class="col-sm text-center">
 				<h2>
-					Corrent
+					Correct
 				</h2>
 			</div>
 		{% else %}
@@ -15,6 +15,9 @@
 				</h2>
 			</div>
 		{% endif %}
+	</div>
+	<div class="row">
+		<a href="{% url 'miniproject:subject' subject_id %}"><< Go Back</a>
 	</div>
 </div>
 

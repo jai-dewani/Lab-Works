@@ -1,8 +1,9 @@
 {% include 'partials/header.html' %}
 
+
 {% ifequal userType 'P' %}
 <p style="margin-top: 10px;" class="container text-right">
-	<a href="new_question" class="btn btn-primary">
+	<a href="{% url 'miniproject:newQuestion' subject_id %}" class="btn btn-primary">
 		Add new Question
 	</a>	
 </p>
@@ -30,6 +31,7 @@
 					
 				</div>
 			</div>
+			<br>
 		{% endfor %}
 	{% endif %}
 </div>

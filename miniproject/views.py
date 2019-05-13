@@ -10,7 +10,7 @@ import os
 import requests, json
 from django.conf import settings
 
-from .models import Answers, Question, AccountUser, Subject, Testcase
+from .models import Answers, Question, AccountUser, Subject, Testcase, Professor
 from .forms import UploadFileForm
 
 
@@ -79,7 +79,7 @@ def question(request,subject_id,question_id):
 			expectedOutput = testcase.output.read()
 			# expectedOutput = expectedOutput.relpace('\r','')
 			print(expectedOutput)
-			output = expectedOutput.decode('unicode_escape')
+			expectedOutput = expectedOutput.decode('unicode_escape')
 			print("INPUT")
 			print(input)
 			print("OUTPUT")
@@ -107,7 +107,8 @@ def question(request,subject_id,question_id):
 				break
 		context = {
 			'answer':flag,
-			'error':error
+			'error':error,
+			'subject_id':subject_id
 		}
 			# print(output["output"])
 
@@ -143,20 +144,22 @@ def newQuestion(request,subject_id):
 		qDesc = request.POST['questionDesc']
 		print(request.user)
 		subject = Subject.objects.get(id=subject_id)
-		user = AccountUser.objects.filter(user=request.user)[0]
-		print(user.phoneNumber) 
+
+		user = Professor.objects.get(user=request.user)
 
 		question = Question(
 			QName = qName,
 			QCode = qCode,
 			QDesc = qDesc,
 			createdBy = user,
+			Qsubject = subject
 		)
 		question.save()
-		return redirect('question/'+str(question.id))
+		return redirect('/')
 	else:
 		context = {
-			'username': request.user.username
+			'username': request.user.username,
+			'subject_id':subject_id
 		}
 		
 		return render(request,'newQuestion.html',context)
@@ -179,7 +182,7 @@ def testCase(request,subject_id,question_id):
 		testcase = Testcase(Question=question,input=request.FILES['input'],output=request.FILES['output'])
 		testcase.save()
 
-		return redirect('/s/'+str(question_id))
+		return redirect('/')
 	else:
 		context = {
 			'subject_id':subject_id,
