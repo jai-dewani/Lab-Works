@@ -31,7 +31,6 @@ def index(request):
 			userType = 'S'
 		except:
 			userType = 'P'
-
 		context = {
 			'subjects':subjects,
 			'user':True,
@@ -39,13 +38,13 @@ def index(request):
 			'username': request.user.username
 		}
 		print(context)
-
 		return render(request,'index.html',context)
 
 def subject(request,subject_id):
 	if request.method == 'POST':
-		return 
-
+		response = render(request, '404.html',)
+		response.status_code = 404
+		return response
 	else:
 		subject = Subject.objects.get(id=subject_id)
 		questions = Question.objects.filter(Qsubject=subject)
@@ -72,27 +71,30 @@ def question(request,subject_id,question_id):
 		testcases = Testcase.objects.filter(Question=question)
 		flag = True,
 		error = ''
+		totalTestcases = len(testcases)
+		print(testcases)
+		passed = 0
+		data = {
+			"language": "python3",
+			"versionIndex": "0",
+			"clientId": "d0b2ab4f943ca044aa8e9ee39290afd5",
+			"clientSecret":"8ddec190c616ac0aafdef83aa83e4a7a493c1415c44b81e29d49405ad5031dd"
+		}
+
+
 		for testcase in testcases:
-			input = testcase.input.read()
-			# input = input.relpace('\r','')
-			input = input.decode('unicode_escape')
-			expectedOutput = testcase.output.read()
-			# expectedOutput = expectedOutput.relpace('\r','')
-			print(expectedOutput)
-			expectedOutput = expectedOutput.decode('unicode_escape')
+
+			input = testcase.input.read().decode('unicode_escape')
+			expectedOutput = testcase.output.read().decode('unicode_escape')
 			print("INPUT")
 			print(input)
 			print("OUTPUT")
 			print(expectedOutput)
-			data = {
-			    "script": source_code,
-			    "stdin":input,
-			    "language": "python3",
-			    "versionIndex": "0",
-			    "clientId": "d0b2ab4f943ca044aa8e9ee39290afd5",
-			    "clientSecret":"8ddec190c616ac0aafdef83aa83e4a7a493c1415c44b81e29d49405ad5031dd"
-			}
+
+			data['script'] = source_code
+			data['stdin'] = input
 			output = requests.post(RUN_URL, json=data).json()
+			
 			print(output)
 			output = output["output"]
 			print("EXPOUTPUT")
@@ -100,15 +102,14 @@ def question(request,subject_id,question_id):
 			print(type(output),type(expectedOutput))
 			if output==expectedOutput:
 				print("CORRECT")
-			else:
-				flag = False
-				error = output
-				print(flag,error)
-				break
+				passed += 1
+		accuracy = float(passed)/float(totalTestcases)*100
+		accuracy = round(accuracy,2)
 		context = {
 			'answer':flag,
 			'error':error,
-			'subject_id':subject_id
+			'subject_id':subject_id,
+			'accuracy':accuracy
 		}
 			# print(output["output"])
 

@@ -1,6 +1,10 @@
 from django.db import models
 from datetime import datetime
 from django.conf import settings
+
+from django.dispatch import receiver
+# from django.db.models.signals import post_deletenote
+
 # Create your models here.
 
 class AccountUser(models.Model):
@@ -43,17 +47,21 @@ class Question(models.Model):
 
 class Testcase(models.Model):
     Question = models.ForeignKey(Question,on_delete=models.CASCADE)
-    input = models.FileField(upload_to='')
-    output = models.FileField()
+    input = models.FileField(upload_to='input')
+    output = models.FileField(upload_to='output')
     def __str__(self):
         return self.Question.QName
 
+# @receiver(post_delete, sender=Testcase)
+# def submission_delete(sender, instance, **kwargs):
+#     instance.file.delete(False) 
+
 class Answers(models.Model):
     question = models.ForeignKey(Question, on_delete=models.CASCADE)
-    code = models.TextField()
+    result = models.CharField(max_length=100,default='0')
+    code = models.FileField(upload_to='submit')
     submitedBy = models.ForeignKey(AccountUser,on_delete=models.CASCADE)
     submitedAt = models.DateTimeField(default=datetime.now, blank=True)
-
     def __str__(self):
-        return self.question
+        return self.question.Qname
 
