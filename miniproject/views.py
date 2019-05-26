@@ -64,16 +64,11 @@ def subject(request,subject_id):
 
 def question(request,subject_id,question_id):
 	if request.method == 'POST':
-		form = UploadFileForm(request.POST, request.FILES)
 		source_code = request.FILES['code'].read().decode('unicode_escape')
-		# print(source_code)
 		question = Question.objects.get(id=question_id)
 		testcases = Testcase.objects.filter(Question=question)
-		flag = True,
 		error = ''
-		totalTestcases = len(testcases)
 		print(testcases)
-		passed = 0
 		data = {
 			"language": "python3",
 			"versionIndex": "0",
@@ -81,11 +76,16 @@ def question(request,subject_id,question_id):
 			"clientSecret":"8ddec190c616ac0aafdef83aa83e4a7a493c1415c44b81e29d49405ad5031dd"
 		}
 
-
+		flag = True
+		totalTestcases = len(testcases)
+		passed = 0
 		for testcase in testcases:
 
 			input = testcase.input.read().decode('unicode_escape')
-			expectedOutput = testcase.output.read().decode('unicode_escape')
+			# Reading expected output and converting it to unicode and cleaning \r 
+			expectedOutput = testcase.output.read()
+			print(expectedOutput)
+			expectedOutput = expectedOutput.decode('unicode_escape').replace('\r','')
 			print("INPUT")
 			print(input)
 			print("OUTPUT")
@@ -97,14 +97,20 @@ def question(request,subject_id,question_id):
 			
 			print(output)
 			output = output["output"]
-			print("EXPOUTPUT")
+			print("PROGRAM OUTPUT")
 			print(output)
 			print(type(output),type(expectedOutput))
 			if output==expectedOutput:
 				print("CORRECT")
 				passed += 1
-		accuracy = float(passed)/float(totalTestcases)*100
-		accuracy = round(accuracy,2)
+			else:
+				flag = False
+
+		accuracy = (float(passed)*100)/float(totalTestcases)
+		print(passed)
+		print(totalTestcases)
+		# accuracy = round(accuracy,2)
+		print(accuracy)
 		context = {
 			'answer':flag,
 			'error':error,
