@@ -10,7 +10,7 @@ import os
 import requests, json
 from django.conf import settings
 
-from .models import Answers, Question, AccountUser, Subject, Testcase
+from .models import Answers, Question, AccountUser, Subject, Testcase, Professor
 from .forms import UploadFileForm
 
 
@@ -26,28 +26,42 @@ def index(request):
 	else:
 		subjects = Subject.objects.filter()
 		# print(questions[0].QName)
+		try:
+			user = AccountUser.objects.get(user=request.user)
+			userType = 'S'
+		except:
+			userType = 'P'
 		context = {
 			'subjects':subjects,
 			'user':True,
+			'userType':userType,
 			'username': request.user.username
 		}
 		print(context)
-
 		return render(request,'index.html',context)
 
 def subject(request,subject_id):
 	if request.method == 'POST':
-		return 
-
+		response = render(request, '404.html',)
+		response.status_code = 404
+		return response
 	else:
 		subject = Subject.objects.get(id=subject_id)
 		questions = Question.objects.filter(Qsubject=subject)
+		try:
+			user = AccountUser.objects.get(user=request.user)
+			userType = 'S'
+		except:
+			userType = 'P'
 		context = {
 			'questions' : questions,
 			'subject_id': subject_id,
+			'userType':userType,
 			'username': request.user.username
 		}
 		return render(request,'subject.html',context)
+
+
 def question(request,subject_id,question_id):
 	if request.method == 'POST':
 		form = UploadFileForm(request.POST, request.FILES)
@@ -57,36 +71,67 @@ def question(request,subject_id,question_id):
 		testcases = Testcase.objects.filter(Question=question)
 		flag = True,
 		error = ''
+		totalTestcases = len(testcases)
+		print(testcases)
+		passed = 0
+		data = {
+			"language": "python3",
+			"versionIndex": "0",
+			"clientId": "d0b2ab4f943ca044aa8e9ee39290afd5",
+			"clientSecret":"8ddec190c616ac0aafdef83aa83e4a7a493c1415c44b81e29d49405ad5031dd"
+		}
+
+
 		for testcase in testcases:
+
 			input = testcase.input.read().decode('unicode_escape')
 			expectedOutput = testcase.output.read().decode('unicode_escape')
-			data = {
-			    "script": source_code,
-			    "stdin":input,
-			    "language": "python3",
-			    "versionIndex": "0",
-			    "clientId": "d0b2ab4f943ca044aa8e9ee39290afd5",
-			    "clientSecret":"8ddec190c616ac0aafdef83aa83e4a7a493c1415c44b81e29d49405ad5031dd"
-			}
-			r = requests.post(RUN_URL, json=data).json()
+			print("INPUT")
+			print(input)
+			print("OUTPUT")
+			print(expectedOutput)
+
+			data['script'] = source_code
+			data['stdin'] = input
+			output = requests.post(RUN_URL, json=data).json()
+			
+			print(output)
 			output = output["output"]
-			if output!=expectedOutput:
-				flag = False
-				error = output
-				break
+			print("EXPOUTPUT")
+			print(output)
+			print(type(output),type(expectedOutput))
+			if output==expectedOutput:
+				print("CORRECT")
+				passed += 1
+		accuracy = float(passed)/float(totalTestcases)*100
+		accuracy = round(accuracy,2)
 		context = {
 			'answer':flag,
-			'error':error
+			'error':error,
+			'subject_id':subject_id,
+			'accuracy':accuracy
 		}
 			# print(output["output"])
 
-		return redirect('/')
+		return render(request,'answer.html',context)
 	else:
 		question = Question.objects.get(id=question_id)
 		testcase = Testcase.objects.filter(Question=question)
+		subject = Subject.objects.get(id=subject_id)
+		try:
+			user = AccountUser.objects.get(user=request.user)
+			try:
+				testcase = testcase[:1]
+			except:
+				testcase = []
+			userType = 'S'
+		except:
+			userType = 'P'
 
 		context = {
 			'subject_id': subject_id,
+			'subject_name':subject.Sname,
+			'userType':userType,
 			'question' : question,
 			'testcase':testcase,
 			'username': request.user.username
@@ -100,20 +145,22 @@ def newQuestion(request,subject_id):
 		qDesc = request.POST['questionDesc']
 		print(request.user)
 		subject = Subject.objects.get(id=subject_id)
-		user = AccountUser.objects.filter(user=request.user)[0]
-		print(user.phoneNumber) 
+
+		user = Professor.objects.get(user=request.user)
 
 		question = Question(
 			QName = qName,
 			QCode = qCode,
 			QDesc = qDesc,
 			createdBy = user,
+			Qsubject = subject
 		)
 		question.save()
-		return redirect('question/'+str(question.id))
+		return redirect('/')
 	else:
 		context = {
-			'username': request.user.username
+			'username': request.user.username,
+			'subject_id':subject_id
 		}
 		
 		return render(request,'newQuestion.html',context)
@@ -136,7 +183,7 @@ def testCase(request,subject_id,question_id):
 		testcase = Testcase(Question=question,input=request.FILES['input'],output=request.FILES['output'])
 		testcase.save()
 
-		return redirect('/s/'+str(question_id))
+		return redirect('/')
 	else:
 		context = {
 			'subject_id':subject_id,
@@ -172,8 +219,7 @@ def signup_view(request):
 		password = request.POST['password']
 		email = request.POST['email']
 		phoneNumber = request.POST['phoneNumber']
-		accountType = request.POST['accountType']
-		print(accountType)
+		sem = request.POST['sem']
 		# try:
 		user = User.objects.create_user(
 			username = username,
@@ -183,7 +229,7 @@ def signup_view(request):
 		accountUser = AccountUser(
 			user = user,
 			phoneNumber = phoneNumber,
-			accountType = str(accountType)
+			semester = sem
 		)
 		accountUser.save()
 		user = authenticate(

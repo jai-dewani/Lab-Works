@@ -22,7 +22,7 @@
 	{% endif %}
 
 	{% block content %}
-		<form method="post" action="" enctype="multipart/form-data">
+		<form method="post" action="{% url 'miniproject:testcase' subject_id question_id %}" enctype="multipart/form-data">
 		{% csrf_token %}
 			<div>
 				Input: 
