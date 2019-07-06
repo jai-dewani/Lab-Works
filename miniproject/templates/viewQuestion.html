@@ -14,10 +14,30 @@
 					<i>Created by: </i> {{question.createdBy}}<br>
 					<br>
 					Submit your code:
-					<form action="" method="POST" enctype="multipart/form-data">
+					<form action="" class="form-group" method="POST" enctype="multipart/form-data">
 						{% csrf_token %}
-						<input type="file" name="code">
-						<input class="btn btn-primary" type="submit" value="submit">
+						
+						<select class="form-control" id="language">
+							<option value="c">C</option>
+							<option value="c++">C++</option>
+							<option value="java">Java</option>
+							<option value="python2">Python 2.x</option>
+							<option value="python3">Python 3.x</option>
+						</select>
+
+						<div id="codearea">
+							<textarea class="form-control" placeholder="Type your code here" rows="10"></textarea>
+						</div>
+						
+						<div style="margin-bottom: -20px; margin-top: 10px" class="text-center">or</div>
+						
+						<div class="custom-file container" id="fileoption">
+							<input type="file" name="code" class="custom-file-input" id="inputGroupFile01" aria-describedby="inputGroupFileAddon01">
+							<label class="custom-file-label" for="inputGroupFile01">Choose file</label>
+						</div>
+
+						<input class="btn btn-primary" type="submit" value="Submit">
+						<!-- <input type="file" name="code"> -->
 					</form>
 				</div>
 			</div>
@@ -60,5 +80,17 @@
 
 <br>
 
-
+<style>
+	#codearea{
+		/* margin-top: 1%; */
+		margin-bottom: 1%;
+	}
+	#language{
+		margin-top: 1%;
+		margin-bottom: 1%;
+	}
+	#fileoption{
+		margin-bottom: 1%;
+	}
+</style>
 {% include 'partials/footer.html' %}
